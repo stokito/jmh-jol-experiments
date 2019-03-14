@@ -1,5 +1,7 @@
 package com.github.stokito.experiments.country;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.openjdk.jmh.annotations.Mode.Throughput;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
@@ -36,6 +38,26 @@ import org.openjdk.jmh.infra.Blackhole;
  * CountryValidatorBench.testSet          thrpt   25   554.652 ±  0.731  ops/ms
  * CountryValidatorBench.testSetNew       thrpt   25     0.933 ±  0.014  ops/ms
  * CountryValidatorBench.testSetReverse   thrpt   25   553.115 ±  1.765  ops/ms
+ *
+ *
+ * # JMH version: 1.21
+ * # VM version: JDK 11.0.2, OpenJDK 64-Bit Server VM, 11.0.2+9-LTS
+ * # VM invoker: /usr/lib/jvm/zulu-11-amd64/bin/java
+ * # VM options: <none>
+ * # Warmup: 5 iterations, 10 s each
+ * # Measurement: 5 iterations, 10 s each
+ * # Timeout: 10 min per iteration
+ * # Threads: 1 thread, will synchronize iterations
+ * # Benchmark mode: Throughput, ops/time
+ *
+ * Benchmark                              Mode  Cnt     Score   Error   Units
+ * CountryValidatorBench.baseline         thrpt   25  1151.736 ± 1.815  ops/ms
+ * CountryValidatorBench.testHashSet      thrpt   25   523.678 ± 17.739  ops/ms
+ * CountryValidatorBench.testInt          thrpt   25   251.990 ± 1.729  ops/ms
+ * CountryValidatorBench.testSet          thrpt   25   100.394 ± 1.603  ops/ms
+ * CountryValidatorBench.testShort        thrpt   25   246.058 ± 2.419  ops/ms
+ * CountryValidatorBench.testShortLinear  thrpt   25    71.698 ± 1.227  ops/ms
+ * CountryValidatorBench.testStr          thrpt   25    57.068 ± 0.090  ops/ms
  */
 @State(Scope.Thread)
 public class CountryValidatorBench {
@@ -46,16 +68,16 @@ public class CountryValidatorBench {
 
   }
 
-/*
   @Benchmark
-  @BenchmarkMode(Mode.Throughput)
-  @OutputTimeUnit(TimeUnit.MILLISECONDS)
+  @BenchmarkMode(Throughput)
+  @OutputTimeUnit(MILLISECONDS)
   public void baseline(Blackhole bh) {
     for (String isoCountry : ISO_COUNTRIES) {
-      bh.consume(isoCountry);
+      bh.consume(isoCountry.hashCode());
     }
   }
 
+/*
   @Benchmark
   @BenchmarkMode(Mode.Throughput)
   @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -64,33 +86,46 @@ public class CountryValidatorBench {
       bh.consume(ISO_COUNTRIES[i]);
     }
   }
-
-  @Benchmark
-  @BenchmarkMode(Mode.Throughput)
-  @OutputTimeUnit(TimeUnit.MILLISECONDS)
-  public void test(Blackhole bh) {
-    for (String isoCountry : ISO_COUNTRIES) {
-      bh.consume(CountryValidator.isValidCountryCode(isoCountry));
-    }
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.Throughput)
-  @OutputTimeUnit(TimeUnit.MILLISECONDS)
-  public void testReverse(Blackhole bh) {
-    for (int i = ISO_COUNTRIES.length - 1; i >= 0; i--) {
-      bh.consume(CountryValidator.isValidCountryCode(ISO_COUNTRIES[i]));
-    }
-  }
 */
+
+  /*
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+    public void test(Blackhole bh) {
+      for (String isoCountry : ISO_COUNTRIES) {
+        bh.consume(CountryValidator.isValidCountryCode(isoCountry));
+      }
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.Throughput)
+    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+    public void testReverse(Blackhole bh) {
+      for (int i = ISO_COUNTRIES.length - 1; i >= 0; i--) {
+        bh.consume(CountryValidator.isValidCountryCode(ISO_COUNTRIES[i]));
+      }
+    }
+  */
+
   @Benchmark
-  @BenchmarkMode(Mode.Throughput)
-  @OutputTimeUnit(TimeUnit.MILLISECONDS)
+  @BenchmarkMode(Throughput)
+  @OutputTimeUnit(MILLISECONDS)
   public void testSet(Blackhole bh) {
     for (String isoCountry : ISO_COUNTRIES) {
       bh.consume(CountryValidator.isValidCountryCodeSet(isoCountry));
     }
   }
+
+  @Benchmark
+  @BenchmarkMode(Throughput)
+  @OutputTimeUnit(MILLISECONDS)
+  public void testHashSet(Blackhole bh) {
+    for (String isoCountry : ISO_COUNTRIES) {
+      bh.consume(CountryValidator.isValidCountryCodeHashSet(isoCountry));
+    }
+  }
+
 /*
   @Benchmark
   @BenchmarkMode(Mode.Throughput)
@@ -101,14 +136,45 @@ public class CountryValidatorBench {
     }
   }
 */
-/*  @Benchmark
-  @BenchmarkMode(Mode.Throughput)
-  @OutputTimeUnit(TimeUnit.MILLISECONDS)
+
+/*
+  @Benchmark
+  @BenchmarkMode(Throughput)
+  @OutputTimeUnit(MILLISECONDS)
   public void testInt(Blackhole bh) {
     for (String isoCountry : ISO_COUNTRIES) {
       bh.consume(CountryValidator.isValidCountryCodeInt(isoCountry));
     }
-  }*/
+  }
+*/
+
+  @Benchmark
+  @BenchmarkMode(Throughput)
+  @OutputTimeUnit(MILLISECONDS)
+  public void testShort(Blackhole bh) {
+    for (String isoCountry : ISO_COUNTRIES) {
+      bh.consume(CountryValidator.isValidCountryCodeShort(isoCountry));
+    }
+  }
+
+  @Benchmark
+  @BenchmarkMode(Throughput)
+  @OutputTimeUnit(MILLISECONDS)
+  public void testShortLinear(Blackhole bh) {
+    for (String isoCountry : ISO_COUNTRIES) {
+      bh.consume(CountryValidator.isValidCountryCodeShortLinear(isoCountry));
+    }
+  }
+
+  @Benchmark
+  @BenchmarkMode(Throughput)
+  @OutputTimeUnit(MILLISECONDS)
+  public void testStr(Blackhole bh) {
+    for (String isoCountry : ISO_COUNTRIES) {
+      bh.consume(CountryValidator.isValidCountryCodeStr(isoCountry));
+    }
+  }
+
 /*
   @Benchmark
   @BenchmarkMode(Mode.Throughput)
@@ -118,7 +184,9 @@ public class CountryValidatorBench {
       bh.consume(CountryValidator.isValidCountryCodeInt(ISO_COUNTRIES[i]));
     }
   }
+*/
 
+/*
   @Benchmark
   @BenchmarkMode(Mode.Throughput)
   @OutputTimeUnit(TimeUnit.MILLISECONDS)

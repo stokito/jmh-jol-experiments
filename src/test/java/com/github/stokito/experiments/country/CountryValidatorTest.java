@@ -1,67 +1,92 @@
 package com.github.stokito.experiments.country;
 
+import static com.github.stokito.experiments.country.CountryValidator.COUNTRIES_HASHSET;
+import static com.github.stokito.experiments.country.CountryValidator.COUNTRIES_INT;
+import static com.github.stokito.experiments.country.CountryValidator.COUNTRIES_SET;
+import static com.github.stokito.experiments.country.CountryValidator.COUNTRIES_SHORT;
+import static com.github.stokito.experiments.country.CountryValidator.COUNTRIES_STR;
 import static java.lang.System.out;
-import static java.util.Arrays.asList;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.TreeSet;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.openjdk.jol.info.GraphLayout;
 
-/**
- *      COUNT       AVG       SUM   DESCRIPTION
- *          1        16        16   com.github.stokito.jsmallmap.CountryValidatorTest
- *          1                  16   (total)
- *
- *
- * com.github.stokito.jsmallmap.CountryValidatorTest@15327b79d footprint:
- *      COUNT       AVG       SUM   DESCRIPTION
- *        250        24      6000   [C
- *          1      1016      1016   [Ljava.lang.String;
- *          1        16        16   com.github.stokito.jsmallmap.CountryValidatorTest
- *        250        24      6000   java.lang.String
- *        502               13032   (total)
- *
- * 101,8125 Kib
- *
- * com.github.stokito.jsmallmap.CountryValidatorTest@15327b79d footprint:
- *      COUNT       AVG       SUM   DESCRIPTION
- *        250        24      6000   [C
- *          1      2064      2064   [Ljava.util.HashMap$Node;
- *          1        16        16   com.github.stokito.jsmallmap.CountryValidatorTest
- *          1        16        16   java.lang.Object
- *        250        24      6000   java.lang.String
- *          1        48        48   java.util.HashMap
- *        250        32      8000   java.util.HashMap$Node
- *          1        16        16   java.util.HashSet
- *        755               22160   (total)
- *
- * 173,125 Kib
- *
- *
- * com.github.stokito.jsmallmap.CountryValidatorTest@22927a81d footprint:
- *      COUNT       AVG       SUM   DESCRIPTION
- *        250        24      6000   [C
- *          1        16        16   com.github.stokito.jsmallmap.CountryValidatorTest
- *          1        16        16   java.lang.Object
- *        250        24      6000   java.lang.String
- *          1        48        48   java.util.TreeMap
- *        250        40     10000   java.util.TreeMap$Entry
- *          1        16        16   java.util.TreeSet
- *        754               22096   (total)
- *
- */
 public class CountryValidatorTest {
-//  public final String[] ISO_COUNTRIES = Locale.getISOCountries();
-//  public final HashSet<String> COUNTRIES_SET = new HashSet<>(asList(Locale.getISOCountries()));
-  public final TreeSet<String> COUNTRIES_SET = new TreeSet<>(asList(Locale.getISOCountries()));
+
+  /**
+   * JDK11
+   * java.lang.String@6dde5c8cd footprint:
+   *      COUNT       AVG       SUM   DESCRIPTION
+   *          1       520       520   [B
+   *          1        24        24   java.lang.String
+   *          2                 544   (total)
+   *
+   *
+   * [I@769f71a9d footprint:
+   *      COUNT       AVG       SUM   DESCRIPTION
+   *          1      1016      1016   [I
+   *          1                1016   (total)
+   *
+   *
+   * [S@4c9f8c13d footprint:
+   *      COUNT       AVG       SUM   DESCRIPTION
+   *          1       520       520   [S
+   *          1                 520   (total)
+   *
+   *
+   * java.util.TreeSet@5ae50ce6d footprint:
+   *      COUNT       AVG       SUM   DESCRIPTION
+   *        249        24      5976   [B
+   *          1        16        16   java.lang.Object
+   *        249        24      5976   java.lang.String
+   *          1        48        48   java.util.TreeMap
+   *        249        40      9960   java.util.TreeMap$Entry
+   *          1        16        16   java.util.TreeSet
+   *        750               21992   (total)
+   *
+   *
+   * java.util.HashSet@77eca502d footprint:
+   *      COUNT       AVG       SUM   DESCRIPTION
+   *        249        24      5976   [B
+   *          1      2064      2064   [Ljava.util.HashMap$Node;
+   *          1        16        16   java.lang.Object
+   *        249        24      5976   java.lang.String
+   *          1        48        48   java.util.HashMap
+   *        249        32      7968   java.util.HashMap$Node
+   *          1        16        16   java.util.HashSet
+   *        751               22064   (total)
+   *
+   *
+   * JDK8 layout is the same but since char is always two bytes so the string is twice bigger:
+   * java.lang.String@59ec2012d footprint:
+   *      COUNT       AVG       SUM   DESCRIPTION
+   *          1      1016      1016   [C
+   *          1        24        24   java.lang.String
+   *          2                1040   (total)
+   *
+   *
+   */
+  @Test
+  public void jol() {
+    out.println(GraphLayout.parseInstance(COUNTRIES_STR).toFootprint());
+    out.println(GraphLayout.parseInstance(COUNTRIES_INT).toFootprint());
+    out.println(GraphLayout.parseInstance(COUNTRIES_SHORT).toFootprint());
+    out.println(GraphLayout.parseInstance(COUNTRIES_SET).toFootprint());
+    out.println(GraphLayout.parseInstance(COUNTRIES_HASHSET).toFootprint());
+  }
+
+  @Test
+  public void allCodes() {
+    //JDK11 - without AN code
+    assertEquals("AdAeAfAgAiAlAmAoAqArAsAtAuAwAxAzBaBbBdBeBfBgBhBiBjBlBmBnBoBqBrBsBtBvBwByBzCaCcCdCfCgChCiCkClCmCnCoCrCuCvCwCxCyCzDeDjDkDmDoDzEcEeEgEhErEsEtFiFjFkFmFoFrGaGbGdGeGfGgGhGiGlGmGnGpGqGrGsGtGuGwGyHkHmHnHrHtHuIdIeIlImInIoIqIrIsItJeJmJoJpKeKgKhKiKmKnKpKrKwKyKzLaLbLcLiLkLrLsLtLuLvLyMaMcMdMeMfMgMhMkMlMmMnMoMpMqMrMsMtMuMvMwMxMyMzNaNcNeNfNgNiNlNoNpNrNuNzOmPaPePfPgPhPkPlPmPnPrPsPtPwPyQaReRoRsRuRwSaSbScSdSeSgShSiSjSkSlSmSnSoSrSsStSvSxSySzTcTdTfTgThTjTkTlTmTnToTrTtTvTwTzUaUgUmUsUyUzVaVcVeVgViVnVuWfWsYeYtZaZmZw", COUNTRIES_STR);
+    //JDK8 - contains additional code AN which was removed in JDK11
+//    assertEquals("AdAeAfAgAiAlAmAnAoAqArAsAtAuAwAxAzBaBbBdBeBfBgBhBiBjBlBmBnBoBqBrBsBtBvBwByBzCaCcCdCfCgChCiCkClCmCnCoCrCuCvCwCxCyCzDeDjDkDmDoDzEcEeEgEhErEsEtFiFjFkFmFoFrGaGbGdGeGfGgGhGiGlGmGnGpGqGrGsGtGuGwGyHkHmHnHrHtHuIdIeIlImInIoIqIrIsItJeJmJoJpKeKgKhKiKmKnKpKrKwKyKzLaLbLcLiLkLrLsLtLuLvLyMaMcMdMeMfMgMhMkMlMmMnMoMpMqMrMsMtMuMvMwMxMyMzNaNcNeNfNgNiNlNoNpNrNuNzOmPaPePfPgPhPkPlPmPnPrPsPtPwPyQaReRoRsRuRwSaSbScSdSeSgShSiSjSkSlSmSnSoSrSsStSvSxSySzTcTdTfTgThTjTkTlTmTnToTrTtTvTwTzUaUgUmUsUyUzVaVcVeVgViVnVuWfWsYeYtZaZmZw", COUNTRIES_STR);
+  }
 
   @Test
   public void isValidCountryCode() {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
       assert CountryValidator.isValidCountryCode(isoCountry);
     }
-    out.println(GraphLayout.parseInstance(this).toFootprint());
   }
 
   @Test
@@ -69,7 +94,20 @@ public class CountryValidatorTest {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
       assert CountryValidator.isValidCountryCodeInt(isoCountry);
     }
-    out.println(GraphLayout.parseInstance(this).toFootprint());
+  }
+
+  @Test
+  public void isValidCountryCodeShort() {
+    for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
+      assert CountryValidator.isValidCountryCodeShort(isoCountry);
+    }
+  }
+
+  @Test
+  public void isValidCountryCodeStr() {
+    for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
+      assert CountryValidator.isValidCountryCodeStr(isoCountry);
+    }
   }
 
   @Test
@@ -77,6 +115,5 @@ public class CountryValidatorTest {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
       assert CountryValidator.isValidCountryCodeSet(isoCountry);
     }
-//    out.println(GraphLayout.parseInstance(CountryValidator.class).toFootprint());
   }
 }
