@@ -87,6 +87,7 @@ public class CountryValidatorTest {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
       assert CountryValidator.isValidCountryCode(isoCountry);
     }
+    assert !CountryValidator.isValidCountryCode("XX");
   }
 
   @Test
@@ -94,6 +95,7 @@ public class CountryValidatorTest {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
       assert CountryValidator.isValidCountryCodeInt(isoCountry);
     }
+    assert !CountryValidator.isValidCountryCode("XX");
   }
 
   @Test
@@ -101,6 +103,7 @@ public class CountryValidatorTest {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
       assert CountryValidator.isValidCountryCodeShort(isoCountry);
     }
+    assert !CountryValidator.isValidCountryCode("XX");
   }
 
   @Test
@@ -108,6 +111,7 @@ public class CountryValidatorTest {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
       assert CountryValidator.isValidCountryCodeStr(isoCountry);
     }
+    assert !CountryValidator.isValidCountryCode("XX");
   }
 
   @Test
@@ -115,5 +119,6 @@ public class CountryValidatorTest {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
       assert CountryValidator.isValidCountryCodeSet(isoCountry);
     }
+    assert !CountryValidator.isValidCountryCode("XX");
   }
 }
