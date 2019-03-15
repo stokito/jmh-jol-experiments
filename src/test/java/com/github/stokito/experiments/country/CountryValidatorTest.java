@@ -7,6 +7,13 @@ import static com.github.stokito.experiments.country.CountryValidator.COUNTRIES_
 import static com.github.stokito.experiments.country.CountryValidator.COUNTRIES_STR;
 import static java.lang.System.out;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import org.apache.commons.collections4.map.HashedMap;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openjdk.jol.info.GraphLayout;
 
@@ -101,9 +108,14 @@ public class CountryValidatorTest {
   @Test
   public void isValidCountryCodeShort() {
     for (String isoCountry : CountryValidator.ISO_COUNTRIES) {
-      assert CountryValidator.isValidCountryCodeShort(isoCountry);
+      assertTrue(CountryValidator.isValidCountryCodeShort(isoCountry));
     }
-    assert !CountryValidator.isValidCountryCode("XX");
+    assertFalse(CountryValidator.isValidCountryCodeShort(null));
+    assertFalse(CountryValidator.isValidCountryCodeShort("XX"));
+    assertFalse(CountryValidator.isValidCountryCodeShort("ad"));
+    assertFalse(CountryValidator.isValidCountryCodeShort("Ad"));
+    assertFalse(CountryValidator.isValidCountryCodeShort("B%"));
+    assertFalse(CountryValidator.isValidCountryCodeShort("Łń"));
   }
 
   @Test
@@ -120,5 +132,36 @@ public class CountryValidatorTest {
       assert CountryValidator.isValidCountryCodeSet(isoCountry);
     }
     assert !CountryValidator.isValidCountryCode("XX");
+  }
+
+  public static String samehash(String s, int level) {
+    if (s.length() < 2)
+      return s;
+    String sub2 = s.substring(0, 2);
+    char c0 = sub2.charAt(0);
+    char c1 = sub2.charAt(1);
+    c0 = (char) (c0 + level);
+    c1 = (char) (c1 - 31 * level);
+    String newsub2 = new String(new char[] { c0, c1 });
+    String re =  newsub2 + s.substring(2);
+    return re;
+  }
+
+  @Ignore
+  @Test
+  public void name() {
+    HashSet<Integer> hashes = new HashSet<>(25 * 25);
+    int allPermutations = 0;
+    for (char c1 = 'A'; c1 < 'Z'; c1++) {
+      for (char c2 = 'A'; c2 < 'Z'; c2++) {
+        allPermutations++;
+        String str = "" + c1 + "" + c2;
+        if (!hashes.add(str.hashCode())) {
+          out.println(str);
+        }
+      }
+    }
+    out.println(allPermutations);
+    out.println(hashes.size());
   }
 }

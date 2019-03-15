@@ -20,6 +20,7 @@ public class CountryValidator {
   public static final String COUNTRIES_STR = initStr(ISO_COUNTRIES);
   public static final int[] COUNTRIES_INT = initIntArray(ISO_COUNTRIES);
   public static final short[] COUNTRIES_SHORT = initShortArray(ISO_COUNTRIES);
+  public static final short[] COUNTRIES_SHORT_BYTE = initShortArrayByte(ISO_COUNTRIES);
   public static final List<String> COUNTRIES_LIST = asList(ISO_COUNTRIES);
   public static final HashSet<String> COUNTRIES_HASHSET = new HashSet<>(COUNTRIES_LIST);
   public static final TreeSet<String> COUNTRIES_SET = new TreeSet<>(COUNTRIES_LIST);
@@ -28,7 +29,6 @@ public class CountryValidator {
     int[] countriesInt = new int[isoCountries.length];
     for (int i = 0; i < isoCountries.length; i++) {
       String isoCountry = isoCountries[i];
-//      if (isoCountry.equals("AN")) continue;
       countriesInt[i] = isoCountry.hashCode();
     }
     return countriesInt;
@@ -38,8 +38,16 @@ public class CountryValidator {
     short[] countriesShort = new short[isoCountries.length];
     for (int i = 0; i < isoCountries.length; i++) {
       String isoCountry = isoCountries[i];
-//      if (isoCountry.equals("AN")) continue;
-      countriesShort[i] = (short) isoCountry.hashCode();
+      countriesShort[i] = countryCodeNeedle(isoCountry);
+    }
+    return countriesShort;
+  }
+
+  private static short[] initShortArrayByte(String[] isoCountries) {
+    short[] countriesShort = new short[isoCountries.length];
+    for (int i = 0; i < isoCountries.length; i++) {
+      String isoCountry = isoCountries[i];
+      countriesShort[i] = countryCodeNeedleByte(isoCountry);
     }
     return countriesShort;
   }
@@ -47,7 +55,6 @@ public class CountryValidator {
   private static String initStr(String[] isoCountries) {
     StringBuilder sb = new StringBuilder(ISO_COUNTRIES.length * 2);
     for (String isoCountry : isoCountries) {
-      //      if (isoCountry.equals("AN")) continue;
       sb.append(isoCountry.charAt(0)).append(Character.toLowerCase(isoCountry.charAt(1)));
     }
     return sb.toString();
@@ -81,13 +88,42 @@ public class CountryValidator {
   }
 
   public static boolean isValidCountryCodeShort(String countryCode) {
-    short needle = (short) countryCode.hashCode();
+    if (countryCode == null || countryCode.length() != 2 || countryCodeIsNotAlphaUppercase(countryCode)) {
+      return false;
+    }
+    short needle = countryCodeNeedle(countryCode);
     return binarySearch(COUNTRIES_SHORT, needle) >= 0;
   }
 
+  public static boolean isValidCountryCodeShortByte(String countryCode) {
+    short needle = countryCodeNeedleByte(countryCode);
+    return binarySearch(COUNTRIES_SHORT_BYTE, needle) >= 0;
+  }
+
   public static boolean isValidCountryCodeShortLinear(String countryCode) {
-    short needle = (short) countryCode.hashCode();
+    short needle = countryCodeNeedle(countryCode);
     return indexOf(COUNTRIES_SHORT, needle) >= 0;
+  }
+
+  private static short countryCodeNeedle(String countryCode) {
+    return (short) countryCode.hashCode();
+  }
+
+  private static short countryCodeNeedleByte(String countryCode) {
+    char hi = countryCode.charAt(0);
+    char lo = countryCode.charAt(1);
+    int i = hi << 8 | lo;
+    short needle = (short) i;
+    return needle;
+  }
+
+  private static boolean countryCodeIsNotAlphaUppercase(String countryCode) {
+    char c1 = countryCode.charAt(0);
+    if (c1 < 'A' || c1 > 'Z') {
+      return true;
+    }
+    char c2 = countryCode.charAt(1);
+    return c2 < 'A' || c2 > 'Z';
   }
 
   public static boolean isValidCountryCodeStr(String countryCode) {

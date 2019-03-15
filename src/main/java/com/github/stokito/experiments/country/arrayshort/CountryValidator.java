@@ -19,11 +19,20 @@ public class CountryValidator {
   private static final short[] COUNTRIES_SHORT = initShortArray(Locale.getISOCountries());
 
   public static boolean isValidCountryCode(String countryCode) {
-    if (countryCode == null) {
+    if (countryCode == null || countryCode.length() != 2 || countryCodeIsNotAlphaUppercase(countryCode)) {
       return false;
     }
     short needle = countryCodeNeedle(countryCode);
     return binarySearch(COUNTRIES_SHORT, needle) >= 0;
+  }
+
+  private static boolean countryCodeIsNotAlphaUppercase(String countryCode) {
+    char c1 = countryCode.charAt(0);
+    if (c1 < 'A' || c1 > 'Z') {
+      return true;
+    }
+    char c2 = countryCode.charAt(1);
+    return c2 < 'A' || c2 > 'Z';
   }
 
   /**
@@ -38,6 +47,14 @@ public class CountryValidator {
    **/
   private static short countryCodeNeedle(String countryCode) {
     return (short) countryCode.hashCode();
+  }
+
+  private static short countryCodeNeedleByte(String countryCode) {
+    char hi = countryCode.charAt(0);
+    char lo = countryCode.charAt(1);
+    int i = hi << 8 | lo;
+    short needle = (short) i;
+    return needle;
   }
 
   private static short[] initShortArray(String[] isoCountries) {

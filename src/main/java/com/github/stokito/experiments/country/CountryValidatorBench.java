@@ -108,6 +108,7 @@ public class CountryValidatorBench {
     }
   */
 
+/*
   @Benchmark
   @BenchmarkMode(Throughput)
   @OutputTimeUnit(MILLISECONDS)
@@ -125,6 +126,7 @@ public class CountryValidatorBench {
       bh.consume(CountryValidator.isValidCountryCodeHashSet(isoCountry));
     }
   }
+*/
 
 /*
   @Benchmark
@@ -157,6 +159,18 @@ public class CountryValidatorBench {
     }
   }
 
+/*
+  @Benchmark
+  @BenchmarkMode(Throughput)
+  @OutputTimeUnit(MILLISECONDS)
+  public void testShortByte(Blackhole bh) {
+    for (String isoCountry : ISO_COUNTRIES) {
+      bh.consume(CountryValidator.isValidCountryCodeShortByte(isoCountry));
+    }
+  }
+*/
+
+/*
   @Benchmark
   @BenchmarkMode(Throughput)
   @OutputTimeUnit(MILLISECONDS)
@@ -174,6 +188,7 @@ public class CountryValidatorBench {
       bh.consume(CountryValidator.isValidCountryCodeStr(isoCountry));
     }
   }
+*/
 
 /*
   @Benchmark
